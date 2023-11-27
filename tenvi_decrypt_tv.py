@@ -5,7 +5,7 @@ import argparse
 import sys
 import json
 
-# python3 tenvi_decrypt_tv.py --cmd unpack --input_dir /Users/flamingo_daddy/Downloads/Tenvi_KR20231111/data --output_dir /Users/flamingo_daddy/Downloads/test_out
+# python3 tenvi_decrypt_tv.py --cmd unpack --input_dir ***/data --output_dir ***/test_out
 
 input_dir = ""
 output_dir = ""
