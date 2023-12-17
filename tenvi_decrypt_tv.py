@@ -11,6 +11,11 @@ input_dir = ""
 output_dir = ""
 only_debug = False
 TV_FILE_VERSION = 258
+MAGIC_NUMBER_JP = 1256179132 # JP
+MAGIC_NUMBER_CN = 1264997954 # CN
+MAGIC_NUMBER_NEW = 1247551947 # KRV200 HK KRX
+default_region = "KR"
+MAGIC_NUMBER = MAGIC_NUMBER_NEW
 
 def decryptXMLInMemory(byteArray):
     counter = 0
@@ -74,7 +79,7 @@ def repackDataTvFile(dataFileName, entries):
     file = open(os.path.join(output_dir, "%s.tv" % dataFileName), "wb")
     buffer = bytearray(bytes(0x40))
     writeInt(0, buffer, 2, TV_FILE_VERSION)
-    writeInt(4, buffer, 4, 1247551947)
+    writeInt(4, buffer, 4, MAGIC_NUMBER)
     file.write(buffer)
     currentIndex = 0
     for entry in entries:
@@ -292,7 +297,7 @@ def repack():
     buffer = bytearray(bytes(totalLength))
 
     writeInt(0, buffer, 2, TV_FILE_VERSION)
-    writeInt(4, buffer, 4, 1247551947)
+    writeInt(4, buffer, 4, MAGIC_NUMBER)
     writeInt(totalLength - 8, buffer, 4, uncompressedByteLength)
     writeInt(totalLength - 4, buffer, 4, length)
     for i in range(0, length):
@@ -309,6 +314,7 @@ if __name__ == '__main__':
     parser.add_argument('--cmd', action="store", dest="cmd", help='operation(unpack or repack)')
     parser.add_argument('--input_dir', action="store", dest="input_dir", help='tv files dir or unpacked files dir')
     parser.add_argument('--output_dir', action="store", dest="output_dir", help='output dir')
+    parser.add_argument('--region', action="store", dest="region", help='region(CN JP KR HK KRX)')
     parser.add_argument('--only_debug', action="store", dest="only_debug", help='dont actually write file')
 
     if len(sys.argv) == 1:
@@ -318,6 +324,15 @@ if __name__ == '__main__':
 
     if results.only_debug:
         only_debug = True
+
+    if results.region:
+        default_region = results.region
+        if default_region == "KR" or default_region == "KRX" or default_region == "HK":
+            MAGIC_NUMBER = MAGIC_NUMBER_NEW
+        elif default_region == "CN":
+            MAGIC_NUMBER = MAGIC_NUMBER_CN
+        elif default_region == "JP":
+            MAGIC_NUMBER = MAGIC_NUMBER_JP
 
     if results.input_dir:
         input_dir = results.input_dir
